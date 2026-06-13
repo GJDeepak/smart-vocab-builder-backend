@@ -1,0 +1,23 @@
+# dependencies
+/node_modules
+
+# env
+# .env
+
+# logs
+/npm-debug.log*
+/yarn-debug.log*
+/yarn-error.log*
+
+# build
+/dist
+/build
+
+# vscode
+.vscode
+
+# mac
+.DS_Store
+
+# coverage
+coverage

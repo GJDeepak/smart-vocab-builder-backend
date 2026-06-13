@@ -1,0 +1,37 @@
+## Architecture Decisions
+
+### Dictionary Integration
+
+External API calls are isolated inside
+services/dictionary.service.js
+to keep controllers clean.
+
+### Review Scheduling
+
+Needs Work:
+- 1 day
+
+Got It Right:
+- 3 days
+
+### Dev Mode
+
+Needs Work:
+- 1 minute
+
+Got It Right:
+- 3 minutes
+
+This allows reviewers to test
+the full review lifecycle in under
+5 minutes.
+
+### MongoDB Query
+
+Words due for review:
+
+{
+  nextReviewDate: {
+    $lte: new Date()
+  }
+}
