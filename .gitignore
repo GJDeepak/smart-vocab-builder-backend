@@ -21,3 +21,6 @@ yarn-error.log*
 
 # coverage
 coverage
+
+# package-lock.json
+package-lock.json
