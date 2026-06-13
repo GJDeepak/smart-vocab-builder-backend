@@ -1,103 +1,50 @@
 import dayjs from "dayjs";
 import Word from "../models/Word.js";
 
-import {
-  fetchWordDetails,
-} from "../services/dictionary.service.js";
+import { fetchWordDetails } from "../services/dictionary.service.js";
 
-export const addWord = async (
-  req,
-  res
-) => {
+export const addWord = async (req, res) => {
   try {
     const { word } = req.body;
 
     if (!word) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Word is required",
-      });
+      return res.status(400).json({ success: false, message: "Word is required" });
     }
 
-    const existingWord =
-      await Word.findOne({
-        userId: req.user._id,
-        word:
-          word.toLowerCase(),
-      });
+    const existingWord = await Word.findOne({ userId: req.user._id, word: word.toLowerCase() });
 
     if (existingWord) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Word already exists",
-      });
+      return res.status(400).json({ success: false, message: "This word already exists" });
     }
 
-    const details =
-      await fetchWordDetails(
-        word
-      );
+    const details = await fetchWordDetails(word);
 
-    const newWord =
-      await Word.create({
-        userId:
-          req.user._id,
+    const payload = {
+      userId: req.user._id,
+      word: word.toLowerCase(),
+      definition: details.definition,
+      example: details.example 
+    };
 
-        word:
-          word.toLowerCase(),
+    const newWord = await Word.create(payload);
 
-        definition:
-          details.definition,
-
-        example:
-          details.example,
-      });
-
-    return res.status(201).json({
-      success: true,
-      data: newWord,
-    });
+    return res.status(201).json({ success: true, data: newWord });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message:
-        error.message,
-    });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-export const getWords = async (
-  req,
-  res
-) => {
+export const getWords = async (req, res) => {
   try {
-    const words =
-      await Word.find({
-        userId:
-          req.user._id,
-      }).sort({
-        createdAt: -1,
-      });
+    const words = await Word.find({ userId: req.user._id }).sort({ createdAt: -1 });
 
-    return res.json({
-      success: true,
-      data: words,
-    });
+    return res.json({ success: true, data: words });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message:
-        error.message,
-    });
+    return res.status(500).json({ success: false, message:  error.message });
   }
 };
 
-export const getReviewWords = async (
-  req,
-  res
-) => {
+export const getReviewWords = async (req, res) => {
   try {
     const words = await Word.find({
       userId: req.user._id,
@@ -109,41 +56,22 @@ export const getReviewWords = async (
       nextReviewDate: 1,
     });
 
-    return res.json({
-      success: true,
-      data: words,
-    });
+    return res.json({ success: true, data: words });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
-export const reviewWord = async (
-  req,
-  res
-) => {
+export const reviewWord = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const {
-      result,
-      devMode = false,
-    } = req.body;
+    const { result, devMode = false } = req.body;
 
-    const word =
-      await Word.findOne({
-        _id: id,
-        userId: req.user._id,
-      });
+    const word = await Word.findOne({ _id: id, userId: req.user._id });
 
     if (!word) {
-      return res.status(404).json({
-        success: false,
-        message: "Word not found",
-      });
+      return res.status(404).json({ success: false, message: "Word not found" });
     }
 
     let nextReviewDate;
@@ -166,21 +94,14 @@ export const reviewWord = async (
             .toDate();
     }
 
-    word.nextReviewDate =
-      nextReviewDate;
+    word.nextReviewDate = nextReviewDate;
 
     word.reviewCount += 1;
 
     await word.save();
 
-    return res.json({
-      success: true,
-      data: word,
-    });
+    return res.json({ success: true, data: word, });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };

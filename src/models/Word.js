@@ -1,46 +1,20 @@
 import mongoose from "mongoose";
 
-const wordSchema = new mongoose.Schema(
-  {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-      index: true,
-    },
+const wordSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true },
 
-    word: {
-      type: String,
-      required: true,
-      trim: true,
-      lowercase: true,
-    },
+  word: { type: String, required: true, trim: true, lowercase: true },
 
-    definition: {
-      type: String,
-      required: true,
-    },
+  definition: { type: String, required: true },
 
-    example: {
-      type: String,
-      default: "",
-    },
+  example: { type: String, default: "" },
 
-    nextReviewDate: {
-      type: Date,
-      default: Date.now,
-      index: true,
-    },
+  nextReviewDate: { type: Date, default: Date.now, index: true },
 
-    reviewCount: {
-      type: Number,
-      default: 0,
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
+  reviewCount: { type: Number, default: 0 },
+}, {
+  timestamps: true,
+});
 
 // wordSchema.index({
 //   userId: 1,
@@ -48,17 +22,13 @@ const wordSchema = new mongoose.Schema(
 // });
 
 // make it unique to prevent duplicate words for the same user
-wordSchema.index(
-  {
-    userId: 1,
-    word: 1,
-  },
-  { unique: true }
-);
+wordSchema.index({
+  userId: 1,
+  word: 1,
+}, { 
+  unique: true 
+});
 
-const Word = mongoose.model(
-  "Word",
-  wordSchema
-);
+const Word = mongoose.model("Word", wordSchema);
 
 export default Word;
