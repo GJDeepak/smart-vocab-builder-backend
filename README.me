@@ -1,37 +1,250 @@
-## Architecture Decisions
+# Smart Spaced-Repetition Vocab Builder - Backend
 
-### Dictionary Integration
+Backend service for the Smart Spaced-Repetition Vocabulary Builder application.
 
-External API calls are isolated inside
-services/dictionary.service.js
-to keep controllers clean.
+Built using:
 
-### Review Scheduling
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
 
-Needs Work:
-- 1 day
+---
 
-Got It Right:
-- 3 days
+# Features
 
-### Dev Mode
+- Add new vocabulary words
+- Fetch definitions from Dictionary API
+- Store words in MongoDB
+- Review words using spaced repetition
+- Schedule future reviews
+- Developer Test Mode support
 
-Needs Work:
-- 1 minute
+---
 
-Got It Right:
-- 3 minutes
+# Project Structure
 
-This allows reviewers to test
-the full review lifecycle in under
-5 minutes.
+src/
+├── controllers/
+├── services/
+├── models/
+├── routes/
+├── middleware/
+├── utils/
+└── server.js
 
-### MongoDB Query
+---
 
-Words due for review:
+# Installation
 
+## 1. Clone Repository
+
+```bash
+git clone <your-repository-url>
+cd backend
+```
+
+## 2. Install Dependencies
+
+```bash
+npm install
+```
+
+---
+
+# Environment Variables
+
+Create a `.env` file in the backend root directory.
+
+```env
+PORT=5000
+
+MONGO_URI=mongodb://localhost:27017/vocab-builder
+
+DICTIONARY_API_URL=https://api.dictionaryapi.dev/api/v2/entries/en
+```
+
+---
+
+# Running the Application
+
+## Development Mode
+
+```bash
+npm run dev
+```
+
+Server will start on:
+
+```bash
+http://localhost:5000
+```
+
+---
+
+## Production Mode
+
+```bash
+npm start
+```
+
+---
+
+# API Endpoints
+
+## Add New Word
+
+### Request
+
+```http
+POST /api/words
+```
+
+### Body
+
+```json
 {
-  nextReviewDate: {
-    $lte: new Date()
-  }
+  "word": "read"
 }
+```
+
+### Response
+
+```json
+{
+  "_id": "...",
+  "word": "read",
+  "definition": "...",
+  "example": "...",
+  "nextReviewDate": "..."
+}
+```
+
+---
+
+## Get All Words
+
+### Request
+
+```http
+GET /api/words
+```
+
+Returns all saved vocabulary words.
+
+---
+
+## Get Review Queue
+
+### Request
+
+```http
+GET /api/review
+```
+
+Returns all words due for review.
+
+---
+
+## Submit Review
+
+### Request
+
+```http
+POST /api/review/:id
+```
+
+### Body
+
+```json
+{
+  "result": "correct",
+  "devMode": false
+}
+```
+
+Possible values:
+
+```json
+correct
+wrong
+```
+
+---
+
+# Spaced Repetition Logic
+
+Normal Mode
+
+| User Action | Next Review |
+|-------------|------------|
+| Correct     | 3 Days     |
+| Wrong       | 1 Day      |
+
+Developer Test Mode
+
+| User Action | Next Review |
+|-------------|------------|
+| Correct     | 3 Minutes  |
+| Wrong       | 1 Minute   |
+
+This allows reviewers to test the full review cycle within a few minutes.
+
+---
+
+# Architecture Decisions
+
+## Service Layer
+
+Dictionary API integration is implemented in a dedicated service layer.
+
+Benefits:
+
+- Clean controllers
+- Better separation of concerns
+- Easier maintenance
+- Easier testing
+
+---
+
+## MongoDB Data Model
+
+Each vocabulary word stores:
+
+```js
+{
+  word,
+  definition,
+  example,
+  nextReviewDate,
+  createdAt,
+  updatedAt
+}
+```
+
+The `nextReviewDate` field is used to determine whether a word is due for review.
+
+---
+
+## Error Handling
+
+The backend handles:
+
+- Invalid words
+- Dictionary API failures
+- MongoDB errors
+- Invalid review requests
+
+Appropriate HTTP status codes are returned.
+
+---
+
+# Author
+
+Jothi Deepak G
+
+GitHub:
+https://github.com/your-github
+
+LinkedIn:
+https://linkedin.com/in/your-linkedin
